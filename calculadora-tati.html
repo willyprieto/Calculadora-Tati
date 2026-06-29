@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Costos Tati" />
+<meta name="theme-color" content="#3E4A3D" />
+<title>Costos & Rentabilidad — Tati</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif; color: #2b2b28; background: #F2EBE0; }
+  .head { background: #3E4A3D; color: #F2EBE0; padding: 18px 18px 16px; position: sticky; top: 0; z-index: 5; }
+  .head h1 { font-family: Georgia, "Times New Roman", serif; font-size: 21px; margin: 0; letter-spacing: .3px; }
+  .head p { margin: 3px 0 0; opacity: .8; font-size: 12.5px; }
+  .nav { display: flex; gap: 2px; background: #36402F; position: sticky; top: 0; z-index: 5; overflow-x: auto; }
+  .nav button { background: none; border: none; color: #cdd2c4; padding: 12px 14px; font-size: 14px; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; flex: 1 0 auto; }
+  .nav button.on { color: #F2EBE0; border-bottom-color: #B89B5E; font-weight: 600; }
+  .body { padding: 16px 14px 60px; max-width: 760px; margin: 0 auto; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-bottom: 16px; }
+  .card { background: #fff; border-radius: 12px; padding: 13px 14px; border: 1px solid #e4dccc; }
+  .card .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .4px; color: #8a8576; line-height: 1.3; }
+  .card .val { font-family: Georgia, serif; font-size: 22px; margin-top: 5px; color: #3E4A3D; }
+  .card .sub { font-size: 11.5px; margin-top: 4px; color: #8a8576; line-height: 1.35; }
+  .card.good { background: #eaf0e4; border-color: #b6c4a3; }
+  .card.alert { background: #fbe9e7; border-color: #e0a99f; }
+  h2.sec { font-family: Georgia, serif; color: #3E4A3D; font-size: 17px; margin: 22px 0 9px; }
+  .panel { background: #fff; border-radius: 12px; border: 1px solid #e4dccc; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 9px 10px; text-align: right; border-bottom: 1px solid #efe9dd; vertical-align: middle; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { background: #f7f2e8; color: #6b6757; font-weight: 600; font-size: 10.5px; text-transform: uppercase; letter-spacing: .3px; }
+  tr.grp td { background: #efe9dd; font-weight: 700; color: #3E4A3D; font-size: 11px; text-transform: uppercase; letter-spacing: .3px; }
+  .svc { font-weight: 600; color: #2b2b28; }
+  .brk { font-size: 11px; color: #9a9483; margin-top: 2px; line-height: 1.35; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-left: 5px; }
+  .verde { background: #5a8a3c; } .amarillo { background: #d6a32e; } .rojo { background: #c14a3a; }
+  input.cell { width: 96px; padding: 7px 8px; border: 1px solid #d8cfbb; border-radius: 7px; text-align: right; font-size: 14px; background: #fdfbf6; }
+  input.cell.sm { width: 52px; }
+  input.cell.txt { width: 100%; text-align: left; }
+  input:focus { outline: 2px solid #B89B5E; border-color: #B89B5E; }
+  .pform { display: grid; grid-template-columns: 1fr 120px; gap: 9px 12px; align-items: center; }
+  .pform label { font-size: 13px; color: #4a4638; }
+  .pform input { padding: 8px 9px; border: 1px solid #d8cfbb; border-radius: 7px; text-align: right; font-size: 15px; background: #fdfbf6; }
+  .hint { font-size: 12.5px; color: #8a8576; margin: 8px 2px 0; line-height: 1.5; }
+  .note { background: #fff; border-left: 4px solid #B89B5E; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #4a4638; margin-bottom: 14px; line-height: 1.55; }
+  .note.red { border-left-color: #c14a3a; }
+  .pill { display: inline-block; background: #ece4d4; color: #6b6757; border-radius: 20px; padding: 3px 10px; font-size: 12px; margin: 0 5px 5px 0; }
+  .bar { display: flex; height: 26px; border-radius: 6px; overflow: hidden; margin: 6px 0 12px; border: 1px solid #e4dccc; }
+  .bar span { display: flex; align-items: center; justify-content: center; font-size: 10.5px; color: #fff; overflow: hidden; white-space: nowrap; }
+  .addbtn { background: #3E4A3D; color: #F2EBE0; border: none; border-radius: 7px; padding: 9px 14px; font-size: 13px; cursor: pointer; margin: 10px; }
+  .delx { background: none; border: none; color: #c14a3a; cursor: pointer; font-size: 18px; padding: 0 4px; }
+  .foot { text-align: center; font-size: 11.5px; color: #9a9483; margin-top: 24px; line-height: 1.6; }
+  .foot button { background: none; border: 1px solid #c9bfa9; color: #6b6757; border-radius: 7px; padding: 6px 12px; font-size: 12px; margin-top: 8px; cursor: pointer; }
+  .scroll { overflow-x: auto; }
+  @media (max-width: 460px) { .cards { gap: 9px; } .card .val { font-size: 20px; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+"use strict";
+
+// ---------------- Datos por defecto ----------------
+const DEFAULTS = {
+  productos: [
+    { id: "silkey", nombre: "Tintura Silkey Millenium (c/amoníaco)", precioEnvase: 11000, contenido: 120, unidad: "g" },
+    { id: "ox20", nombre: "Oxidante 20 vol (Silkey)", precioEnvase: 25000, contenido: 5000, unidad: "ml" },
+    { id: "inoa", nombre: "Tintura Inoa (s/amoníaco)", precioEnvase: 31290, contenido: 60, unidad: "g" },
+    { id: "ox20inoa", nombre: "Oxidante 20 vol (Inoa)", precioEnvase: 34190, contenido: 1000, unidad: "ml" },
+    { id: "polvo", nombre: "Polvo decolorante", precioEnvase: 15000, contenido: 700, unidad: "g" },
+    { id: "ox30", nombre: "Oxidante 30 vol", precioEnvase: 30000, contenido: 5000, unidad: "ml" },
+    { id: "gorra", nombre: "Gorra de reflejos", precioEnvase: 2200, contenido: 1, unidad: "u" },
+    { id: "papel", nombre: "Papel (por colocación)", precioEnvase: 2200, contenido: 1, unidad: "u" },
+    { id: "nanoplex", nombre: "Nanoplex (alisado)", precioEnvase: 50000, contenido: 300, unidad: "ml" },
+    { id: "protector", nombre: "Protector térmico", precioEnvase: 6500, contenido: 250, unidad: "ml" },
+    { id: "spray", nombre: "Spray fijador", precioEnvase: 15000, contenido: 390, unidad: "ml" },
+    { id: "horquillas", nombre: "Horquillas", precioEnvase: 15000, contenido: 200, unidad: "g" },
+  ],
+  procs: [
+    { id: "corte", grupo: "Corte", nombre: "Corte + brushing + peinado", precio: 60000, min: 40, receta: [], vol: 6 },
+    { id: "flequillo", grupo: "Corte", nombre: "Flequillo", precio: 25000, min: 10, receta: [], vol: 1 },
+    { id: "raiz-am-b", grupo: "Color raíz · con amoníaco", nombre: "Raíz c/amoníaco · Bajo", precio: 80000, min: 60, receta: [["silkey", 20], ["ox20", 20]], vol: 3 },
+    { id: "raiz-am-a", grupo: "Color raíz · con amoníaco", nombre: "Raíz c/amoníaco · Alto", precio: 100000, min: 60, receta: [["silkey", 30], ["ox20", 30]], vol: 2 },
+    { id: "raiz-sam-b", grupo: "Color raíz · sin amoníaco", nombre: "Raíz s/amoníaco (Inoa) · Bajo", precio: 100000, min: 60, receta: [["inoa", 20], ["ox20inoa", 20]], vol: 0 },
+    { id: "raiz-sam-a", grupo: "Color raíz · sin amoníaco", nombre: "Raíz s/amoníaco (Inoa) · Alto", precio: 120000, min: 60, receta: [["inoa", 30], ["ox20inoa", 30]], vol: 0 },
+    { id: "comp-am-b", grupo: "Color completo · con amoníaco", nombre: "Completo c/amoníaco · Bajo", precio: 100000, min: 75, receta: [["silkey", 40], ["ox20", 40]], vol: 1 },
+    { id: "comp-am-a", grupo: "Color completo · con amoníaco", nombre: "Completo c/amoníaco · Alto", precio: 120000, min: 75, receta: [["silkey", 60], ["ox20", 60]], vol: 0 },
+    { id: "comp-sam-b", grupo: "Color completo · sin amoníaco", nombre: "Completo s/amoníaco (Inoa) · Bajo", precio: 120000, min: 75, receta: [["inoa", 40], ["ox20inoa", 40]], vol: 0 },
+    { id: "comp-sam-a", grupo: "Color completo · sin amoníaco", nombre: "Completo s/amoníaco (Inoa) · Alto", precio: 140000, min: 75, receta: [["inoa", 60], ["ox20inoa", 60]], vol: 0 },
+    { id: "refl-gorra-b", grupo: "Reflejos con gorra", nombre: "Reflejos gorra · Bajo", precio: 160000, min: 120, receta: [["polvo", 30], ["ox30", 80], ["gorra", 1]], vol: 0 },
+    { id: "refl-gorra-a", grupo: "Reflejos con gorra", nombre: "Reflejos gorra · Alto", precio: 180000, min: 120, receta: [["polvo", 50], ["ox30", 120], ["gorra", 1]], vol: 0 },
+    { id: "refl-papel-b", grupo: "Reflejos con papel", nombre: "Reflejos papel · Bajo", precio: 200000, min: 180, receta: [["polvo", 30], ["ox30", 80], ["papel", 1]], vol: 1 },
+    { id: "refl-papel-a", grupo: "Reflejos con papel", nombre: "Reflejos papel · Alto", precio: 240000, min: 180, receta: [["polvo", 50], ["ox30", 120], ["papel", 1]], vol: 0 },
+    { id: "alis-b", grupo: "Alisado sin formol", nombre: "Alisado · Bajo", precio: 200000, min: 120, receta: [["nanoplex", 100]], vol: 0 },
+    { id: "alis-a", grupo: "Alisado sin formol", nombre: "Alisado · Alto", precio: 240000, min: 120, receta: [["nanoplex", 150]], vol: 0 },
+    { id: "desg-b", grupo: "Desgaste (= reflejos con papel)", nombre: "Desgaste · Bajo", precio: 200000, min: 180, receta: [["polvo", 30], ["ox30", 80], ["papel", 1]], vol: 0 },
+    { id: "desg-a", grupo: "Desgaste (= reflejos con papel)", nombre: "Desgaste · Alto", precio: 240000, min: 180, receta: [["polvo", 50], ["ox30", 120], ["papel", 1]], vol: 0 },
+    { id: "contorno-solo", grupo: "Contorno iluminado", nombre: "Contorno solo", precio: 100000, min: 30, receta: [["polvo", 10], ["ox30", 20], ["papel", 1]], vol: 0 },
+    { id: "contorno-combo", grupo: "Contorno iluminado", nombre: "Contorno + otro proc.", precio: 60000, min: 30, receta: [["polvo", 10], ["ox30", 20], ["papel", 1]], vol: 0 },
+    { id: "pei-brush-b", grupo: "Peinado brushing / planchita", nombre: "Brushing/planchita · Bajo", precio: 80000, min: 40, receta: [["protector", 2], ["spray", 5]], vol: 3 },
+    { id: "pei-brush-a", grupo: "Peinado brushing / planchita", nombre: "Brushing/planchita · Alto", precio: 120000, min: 40, receta: [["protector", 2], ["spray", 5]], vol: 1 },
+    { id: "pei-semi-b", grupo: "Peinado semi recogido", nombre: "Semi recogido · Bajo", precio: 120000, min: 60, receta: [["protector", 2], ["spray", 5], ["horquillas", 25]], vol: 1 },
+    { id: "pei-semi-a", grupo: "Peinado semi recogido", nombre: "Semi recogido · Alto", precio: 130000, min: 60, receta: [["protector", 2], ["spray", 5], ["horquillas", 25]], vol: 0 },
+    { id: "pei-reco", grupo: "Peinado recogido", nombre: "Recogido · Bajo", precio: 160000, min: 60, receta: [["protector", 2], ["spray", 5], ["horquillas", 50]], vol: 1 },
+  ],
+  fijos: [
+    { nombre: "Seguro auto", monto: 200000 },
+    { nombre: "Depreciación auto (Peugeot 207)", monto: 50000 },
+    { nombre: "Publicidad / ads Instagram", monto: 50000 },
+    { nombre: "Patente", monto: 30000 },
+    { nombre: "Celular + internet", monto: 30000 },
+    { nombre: "Canva + herramientas", monto: 10000 },
+    { nombre: "Monotributo (consultar contador)", monto: 0 },
+  ],
+  equipos: [
+    { nombre: "Secador profesional", costo: 250000, vida: 36 },
+    { nombre: "Buclera / rizador", costo: 80000, vida: 36 },
+    { nombre: "Planchita", costo: 120000, vida: 36 },
+    { nombre: "Máquina de corte", costo: 90000, vida: 48 },
+    { nombre: "Tijeras profesionales", costo: 150000, vida: 60 },
+    { nombre: "Pinceles, bowls y varios", costo: 40000, vida: 24 },
+  ],
+  params: {
+    naftaLitro: 2000, consumo: 10, desgasteKm: 60, kmViaje: 20, peaje: 0,
+    ingresoObjetivo: 2250000, horasMes: 150, tiempoViajeMin: 40, margen: 30,
+  },
+};
+
+// ---------------- Estado + guardado ----------------
+const KEY = "tati_costos_v1";
+let state, tab = "tablero";
+
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return clone(DEFAULTS);
+    const s = JSON.parse(raw);
+    // merge defensivo por si falta algo
+    return {
+      productos: s.productos || clone(DEFAULTS.productos),
+      procs: s.procs || clone(DEFAULTS.procs),
+      fijos: s.fijos || clone(DEFAULTS.fijos),
+      equipos: s.equipos || clone(DEFAULTS.equipos),
+      params: Object.assign(clone(DEFAULTS.params), s.params || {}),
+    };
+  } catch (e) { return clone(DEFAULTS); }
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+// ---------------- Utilidades ----------------
+const fmt = (n) => "$" + Math.round(n || 0).toLocaleString("es-AR");
+const pct = (n) => Math.round(n * 100) + "%";
+const num = (v) => { const x = parseFloat(v); return isNaN(x) ? 0 : x; };
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+// ---------------- Cálculos ----------------
+function compute() {
+  const p = state.params;
+  const costoUnit = {};
+  state.productos.forEach((x) => costoUnit[x.id] = x.contenido > 0 ? x.precioEnvase / x.contenido : 0);
+  const tarifaHora = p.horasMes > 0 ? p.ingresoObjetivo / p.horasMes : 0;
+  const naftaKm = (p.naftaLitro * p.consumo) / 100;
+  const costoViaje = p.kmViaje * (naftaKm + p.desgasteKm) + p.peaje;
+  const amortMes = state.equipos.reduce((s, e) => s + (e.vida > 0 ? e.costo / e.vida : 0), 0);
+  const fijosMes = state.fijos.reduce((s, f) => s + num(f.monto), 0);
+  const fijosTotalMes = fijosMes + amortMes;
+  const totalTurnos = state.procs.reduce((s, x) => s + num(x.vol), 0);
+  const fijoPorTurno = totalTurnos > 0 ? fijosTotalMes / totalTurnos : 0;
+
+  const filas = state.procs.map((pr) => {
+    const insumos = pr.receta.reduce((s, r) => s + (costoUnit[r[0]] || 0) * r[1], 0);
+    const tiempoCosto = ((pr.min + p.tiempoViajeMin) / 60) * tarifaHora;
+    const costoTotal = insumos + costoViaje + tiempoCosto + fijoPorTurno;
+    const objetivo = costoTotal * (1 + p.margen / 100);
+    const margenActual = pr.precio > 0 ? (pr.precio - costoTotal) / pr.precio : -1;
+    let estado = "rojo";
+    if (pr.precio >= objetivo) estado = "verde"; else if (pr.precio >= costoTotal) estado = "amarillo";
+    return Object.assign({}, pr, { insumos, tiempoCosto, costoTotal, piso: costoTotal, objetivo, margenActual, estado });
+  });
+
+  let ingresos = 0, cInsumos = 0, cViaje = 0, sueldo = 0, horas = 0, sumaCM = 0, sumaPocket = 0, vol = 0;
+  filas.forEach((f) => {
+    const v = num(f.vol);
+    ingresos += v * f.precio; cInsumos += v * f.insumos; cViaje += v * costoViaje;
+    sueldo += v * f.tiempoCosto; horas += (v * (f.min + p.tiempoViajeMin)) / 60;
+    sumaCM += v * (f.precio - f.insumos - costoViaje - f.tiempoCosto);
+    sumaPocket += v * (f.precio - f.insumos - costoViaje);
+    vol += v;
+  });
+  const takeHome = ingresos - cInsumos - cViaje - fijosTotalMes;
+  const cmProm = vol > 0 ? sumaCM / vol : 0;
+  const peTurnos = cmProm > 0 ? fijosTotalMes / cmProm : null;
+  const tarifaReal = horas > 0 ? takeHome / horas : 0;
+  const ticketProm = vol > 0 ? ingresos / vol : 0;
+  const pocketProm = vol > 0 ? sumaPocket / vol : 0;
+  const turnosMeta = pocketProm > 0 ? (p.ingresoObjetivo + fijosTotalMes) / pocketProm : null;
+  const facturacionMeta = turnosMeta ? turnosMeta * ticketProm : null;
+  const turnosFaltan = turnosMeta ? Math.max(turnosMeta - vol, 0) : null;
+
+  return { costoUnit, tarifaHora, naftaKm, costoViaje, amortMes, fijosMes, fijosTotalMes, totalTurnos, fijoPorTurno,
+    filas, ingresos, cInsumos, cViaje, sueldo, horas, takeHome, peTurnos, tarifaReal, ticketProm, turnosMeta, facturacionMeta, turnosFaltan, vol };
+}
+
+// ---------------- Render ----------------
+function render() {
+  const c = compute();
+  const tabs = [["tablero", "Tablero"], ["precios", "Precios"], ["insumos", "Insumos"], ["param", "Ajustes"]];
+  let html = '<div class="head"><h1>Costos & Rentabilidad — Tati</h1><p>Peluquería a domicilio</p></div>';
+  html += '<div class="nav">' + tabs.map(t => '<button data-action="tab" data-tab="' + t[0] + '" class="' + (tab === t[0] ? "on" : "") + '">' + t[1] + '</button>').join("") + '</div>';
+  html += '<div class="body">';
+  if (tab === "tablero") html += viewTablero(c);
+  else if (tab === "precios") html += viewPrecios(c);
+  else if (tab === "insumos") html += viewInsumos(c);
+  else if (tab === "param") html += viewParam(c);
+  html += foot();
+  html += '</div>';
+  document.getElementById("app").innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+function viewTablero(c) {
+  const meta = state.params.ingresoObjetivo;
+  const pctMeta = meta > 0 ? c.takeHome / meta : 0;
+  const llego = c.takeHome >= meta;
+  const seg = [
+    ["Insumos", c.cInsumos, "#B89B5E"],
+    ["Viaje", c.cViaje, "#7a8a6a"],
+    ["Costos fijos", c.fijosTotalMes, "#a9744f"],
+    ["Lo que se lleva Tati", Math.max(c.takeHome, 0), "#3E4A3D"],
+  ];
+  const tot = seg.reduce((s, x) => s + x[1], 0) || 1;
+  let h = '<div class="cards">';
+  h += card("Facturación del mes (estimada)", fmt(c.ingresos), c.totalTurnos + " turnos · " + c.horas.toFixed(0) + " hs", "");
+  h += card("Lo que se lleva Tati", fmt(c.takeHome), pct(pctMeta) + " de la meta de " + fmt(meta), llego ? "good" : "");
+  h += card("Su tarifa real por hora", fmt(c.tarifaReal), "piso de costo: " + fmt(c.tarifaHora) + "/h", "");
+  h += card("Para llegar a la meta", c.facturacionMeta ? fmt(c.facturacionMeta) : "—",
+    c.turnosMeta ? ("≈ " + Math.ceil(c.turnosMeta) + " turnos · faltan " + Math.ceil(c.turnosFaltan)) : "cargá volumen", "");
+  h += '</div>';
+  h += '<div class="note"><b>"Lo que se lleva Tati"</b> es tu sueldo y tu ganancia juntos: todo lo que queda después de pagar insumos, viaje y costos fijos. Como sos la dueña, todo eso es plata tuya. Tu <b>tarifa real por hora</b> (' + fmt(c.tarifaReal) + ') está muy por encima del piso de ' + fmt(c.tarifaHora) + ' — esa diferencia es lo que vale tu trabajo.</div>';
+  h += '<h2 class="sec">A dónde va cada peso facturado</h2><div class="bar">';
+  seg.filter(s => s[1] > 0).forEach(s => { h += '<span style="width:' + (s[1] / tot * 100) + '%;background:' + s[2] + '">' + (s[1] / tot > 0.1 ? s[0] : "") + '</span>'; });
+  h += '</div><div>';
+  seg.forEach(s => h += '<span class="pill">' + s[0] + ': ' + fmt(s[1]) + '</span>');
+  h += '</div>';
+  h += '<h2 class="sec">Cuánto necesitás para igualar el sueldo</h2>';
+  h += '<div class="note">Para llevarte los ' + fmt(meta) + ' limpios, tenés que <b>facturar ≈ ' + (c.facturacionMeta ? fmt(c.facturacionMeta) : "—") + '/mes</b> (paga tu sueldo + ' + fmt(c.fijosTotalMes) + ' de costos fijos + insumos y viajes). Con tu mezcla actual son <b>≈ ' + (c.turnosMeta ? Math.ceil(c.turnosMeta) : "—") + ' turnos/mes</b>. Hoy tenés ' + c.totalTurnos + ', te faltan <b>' + (c.turnosFaltan ? Math.ceil(c.turnosFaltan) : "—") + '</b>. El punto de equilibrio (solo cubrir fijos) son <b>' + (c.peTurnos ? Math.ceil(c.peTurnos) : "—") + ' turnos</b>. Más color y alisados (ticket alto) → llegás con menos turnos; más cortes → necesitás más.</div>';
+  h += '<div class="note red"><b>Ojo con el monotributo.</b> Facturando cerca de ese nivel por mes, en el año podés rozar el techo del monotributo y tener que pasar a responsable inscripto (con IVA). Chequealo con un contador y cargá la cuota real en Ajustes.</div>';
+  return h;
+}
+
+function card(lbl, val, sub, cls) {
+  return '<div class="card ' + cls + '"><div class="lbl">' + lbl + '</div><div class="val">' + val + '</div><div class="sub">' + sub + '</div></div>';
+}
+
+function viewPrecios(c) {
+  let h = '<div class="note">El <b>piso</b> cubre todos los costos con ganancia cero — por debajo perdés. El <b>objetivo</b> es el piso + ' + state.params.margen + '% de ganancia. <span class="dot verde"></span> bien · <span class="dot amarillo"></span> cubre costos sin la ganancia buscada · <span class="dot rojo"></span> por debajo del costo. Editá precio y cantidad y se guarda solo.</div>';
+  h += '<div class="panel scroll"><table><thead><tr><th>Servicio</th><th>Precio</th><th>Cant</th><th>Piso</th><th>Objetivo</th><th>Margen</th></tr></thead><tbody>';
+  let g = null;
+  c.filas.forEach((f) => {
+    if (f.grupo !== g) { h += '<tr class="grp"><td colspan="6">' + esc(f.grupo) + '</td></tr>'; g = f.grupo; }
+    const mc = f.margenActual < 0 ? "#c14a3a" : (f.margenActual < state.params.margen / 100 ? "#d6a32e" : "#5a8a3c");
+    h += '<tr><td><div class="svc">' + esc(f.nombre) + '<span class="dot ' + f.estado + '"></span></div>' +
+      '<div class="brk">Costo ' + fmt(f.costoTotal) + ' · ins ' + fmt(f.insumos) + ' · viaje ' + fmt(c.costoViaje) + ' · tiempo ' + fmt(f.tiempoCosto) + ' · fijos ' + fmt(c.fijoPorTurno) + '</div></td>' +
+      '<td><input class="cell" inputmode="numeric" data-kind="proc" data-id="' + f.id + '" data-field="precio" value="' + f.precio + '"></td>' +
+      '<td><input class="cell sm" inputmode="numeric" data-kind="proc" data-id="' + f.id + '" data-field="vol" value="' + f.vol + '"></td>' +
+      '<td>' + fmt(f.piso) + '</td><td style="color:#3E4A3D;font-weight:600">' + fmt(f.objetivo) + '</td>' +
+      '<td style="color:' + mc + ';font-weight:600">' + (f.precio > 0 ? pct(f.margenActual) : "—") + '</td></tr>';
+  });
+  h += '</tbody></table></div>';
+  return h;
+}
+
+function viewInsumos(c) {
+  let h = '<div class="note"><b>El corazón del modelo.</b> Cuando cambiás el precio de un producto, se recalcula el costo de cada servicio que lo usa. Actualizalo cuando comprás y todo se acomoda solo.</div>';
+  h += '<h2 class="sec">Productos</h2><div class="panel scroll"><table><thead><tr><th>Producto</th><th>Precio envase</th><th>Contenido</th><th>Costo/unidad</th></tr></thead><tbody>';
+  state.productos.forEach((p) => {
+    h += '<tr><td><div class="svc">' + esc(p.nombre) + '</div></td>' +
+      '<td><input class="cell" inputmode="numeric" data-kind="producto" data-id="' + p.id + '" data-field="precioEnvase" value="' + p.precioEnvase + '"></td>' +
+      '<td><input class="cell sm" inputmode="numeric" data-kind="producto" data-id="' + p.id + '" data-field="contenido" value="' + p.contenido + '"> ' + p.unidad + '</td>' +
+      '<td>' + fmt(c.costoUnit[p.id]) + '/' + p.unidad + '</td></tr>';
+  });
+  h += '</tbody></table></div>';
+  h += '<h2 class="sec">Recetas por servicio</h2><div class="panel scroll"><table><thead><tr><th>Servicio</th><th style="text-align:left">Usa</th><th>Insumos</th></tr></thead><tbody>';
+  state.procs.forEach((p) => {
+    const ins = p.receta.reduce((s, r) => s + (c.costoUnit[r[0]] || 0) * r[1], 0);
+    const det = p.receta.length === 0 ? "— sin insumos —" : p.receta.map((r) => {
+      const prod = state.productos.find((x) => x.id === r[0]);
+      return r[1] + (prod ? prod.unidad : "") + " " + (prod ? prod.nombre.split(" (")[0] : r[0]);
+    }).join("  ·  ");
+    h += '<tr><td><div class="svc">' + esc(p.nombre) + '</div></td><td style="text-align:left;color:#6b6757;font-size:12px">' + esc(det) + '</td><td><b>' + fmt(ins) + '</b></td></tr>';
+  });
+  h += '</tbody></table></div>';
+  return h;
+}
+
+function viewParam(c) {
+  const p = state.params;
+  let h = '<h2 class="sec">Tiempo y sueldo</h2><div class="pform">';
+  h += pf("Ingreso mensual objetivo", "ingresoObjetivo", p.ingresoObjetivo);
+  h += pf("Horas reales de trabajo / mes", "horasMes", p.horasMes);
+  h += pf("Viaje por turno (min)", "tiempoViajeMin", p.tiempoViajeMin);
+  h += '</div><p class="hint">Tarifa por hora (piso de costo): <b>' + fmt(c.tarifaHora) + '</b>. No es lo que cobrás, es el mínimo que tu hora tiene que rendir para igualar el sueldo anterior.</p>';
+
+  h += '<h2 class="sec">Auto</h2><div class="pform">';
+  h += pf("Nafta ($/litro)", "naftaLitro", p.naftaLitro);
+  h += pf("Consumo (L/100 km)", "consumo", p.consumo);
+  h += pf("Desgaste ($/km)", "desgasteKm", p.desgasteKm);
+  h += pf("Km por viaje (ida+vuelta)", "kmViaje", p.kmViaje);
+  h += pf("Peaje por viaje", "peaje", p.peaje);
+  h += '</div><p class="hint">Nafta ' + fmt(c.naftaKm) + '/km + desgaste ' + fmt(p.desgasteKm) + '/km = ' + fmt(c.naftaKm + p.desgasteKm) + '/km. Costo de viaje por turno: <b>' + fmt(c.costoViaje) + '</b>.</p>';
+
+  h += '<h2 class="sec">Margen de ganancia</h2><div class="pform">';
+  h += pf("Margen objetivo (%)", "margen", p.margen);
+  h += '</div>';
+
+  h += '<h2 class="sec">Costos fijos — total ' + fmt(c.fijosMes) + '/mes</h2><div class="panel"><table><thead><tr><th>Concepto</th><th>Monto/mes</th><th></th></tr></thead><tbody>';
+  state.fijos.forEach((f, i) => {
+    h += '<tr><td><input class="cell txt" data-kind="fijo" data-idx="' + i + '" data-field="nombre" value="' + esc(f.nombre) + '"></td>' +
+      '<td><input class="cell" inputmode="numeric" data-kind="fijo" data-idx="' + i + '" data-field="monto" value="' + f.monto + '"></td>' +
+      '<td><button class="delx" data-action="del-fijo" data-idx="' + i + '">×</button></td></tr>';
+  });
+  h += '</tbody></table><button class="addbtn" data-action="add-fijo">+ Agregar costo fijo</button></div>';
+
+  h += '<h2 class="sec">Equipos (amortización) — ' + fmt(c.amortMes) + '/mes</h2><div class="panel scroll"><table><thead><tr><th>Equipo</th><th>Costo</th><th>Vida (meses)</th><th>Amort/mes</th><th></th></tr></thead><tbody>';
+  state.equipos.forEach((e, i) => {
+    h += '<tr><td><input class="cell txt" data-kind="equipo" data-idx="' + i + '" data-field="nombre" value="' + esc(e.nombre) + '"></td>' +
+      '<td><input class="cell" inputmode="numeric" data-kind="equipo" data-idx="' + i + '" data-field="costo" value="' + e.costo + '"></td>' +
+      '<td><input class="cell sm" inputmode="numeric" data-kind="equipo" data-idx="' + i + '" data-field="vida" value="' + e.vida + '"></td>' +
+      '<td>' + fmt(e.vida > 0 ? e.costo / e.vida : 0) + '</td>' +
+      '<td><button class="delx" data-action="del-equipo" data-idx="' + i + '">×</button></td></tr>';
+  });
+  h += '</tbody></table><button class="addbtn" data-action="add-equipo">+ Agregar equipo</button></div>';
+  h += '<p class="hint">Fijos + amortización (' + fmt(c.fijosTotalMes) + '/mes) se reparten entre todos los turnos del mes, para que cada precio cargue su parte de la estructura.</p>';
+  return h;
+}
+
+function pf(label, field, val) {
+  return '<label>' + label + '</label><input inputmode="numeric" data-kind="param" data-field="' + field + '" value="' + val + '">';
+}
+
+function foot() {
+  return '<div class="foot">Tus datos se guardan automáticamente en este teléfono.<br><button data-action="reset">Restablecer todo a los valores iniciales</button></div>';
+}
+
+// ---------------- Eventos ----------------
+document.addEventListener("change", function (ev) {
+  const el = ev.target;
+  if (el.tagName !== "INPUT") return;
+  const kind = el.getAttribute("data-kind");
+  if (!kind) return;
+  const field = el.getAttribute("data-field");
+  const textField = (field === "nombre");
+  const val = textField ? el.value : num(el.value);
+  if (kind === "param") { state.params[field] = val; }
+  else if (kind === "producto") { const o = state.productos.find(x => x.id === el.getAttribute("data-id")); if (o) o[field] = val; }
+  else if (kind === "proc") { const o = state.procs.find(x => x.id === el.getAttribute("data-id")); if (o) o[field] = val; }
+  else if (kind === "fijo") { state.fijos[+el.getAttribute("data-idx")][field] = val; }
+  else if (kind === "equipo") { state.equipos[+el.getAttribute("data-idx")][field] = val; }
+  save(); render();
+});
+
+document.addEventListener("click", function (ev) {
+  const b = ev.target.closest("[data-action]");
+  if (!b) return;
+  const a = b.getAttribute("data-action");
+  if (a === "tab") { tab = b.getAttribute("data-tab"); render(); }
+  else if (a === "add-fijo") { state.fijos.push({ nombre: "Nuevo costo", monto: 0 }); save(); render(); }
+  else if (a === "del-fijo") { state.fijos.splice(+b.getAttribute("data-idx"), 1); save(); render(); }
+  else if (a === "add-equipo") { state.equipos.push({ nombre: "Nuevo equipo", costo: 0, vida: 36 }); save(); render(); }
+  else if (a === "del-equipo") { state.equipos.splice(+b.getAttribute("data-idx"), 1); save(); render(); }
+  else if (a === "reset") { if (confirm("¿Borrar todos tus datos y volver a los valores iniciales?")) { state = clone(DEFAULTS); save(); tab = "tablero"; render(); } }
+});
+
+// ---------------- Arranque ----------------
+state = load();
+render();
+</script>
+</body>
+</html>
