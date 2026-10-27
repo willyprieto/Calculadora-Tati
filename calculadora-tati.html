@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Costos Tati" />
+<meta name="theme-color" content="#3E4A3D" />
+<title>Costos & Rentabilidad — Tati</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif; color: #2b2b28; background: #F2EBE0; }
+  .head { background: #3E4A3D; color: #F2EBE0; padding: 16px 18px 14px; }
+  .head h1 { font-family: Georgia, "Times New Roman", serif; font-size: 20px; margin: 0; letter-spacing: .3px; }
+  .head p { margin: 3px 0 0; opacity: .8; font-size: 12px; }
+  .nav { display: flex; gap: 2px; background: #36402F; position: sticky; top: 0; z-index: 5; overflow-x: auto; }
+  .nav button { background: none; border: none; color: #cdd2c4; padding: 12px 13px; font-size: 13.5px; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; flex: 1 0 auto; }
+  .nav button.on { color: #F2EBE0; border-bottom-color: #B89B5E; font-weight: 600; }
+  .body { padding: 16px 14px 70px; max-width: 760px; margin: 0 auto; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-bottom: 16px; }
+  .card { background: #fff; border-radius: 12px; padding: 13px 14px; border: 1px solid #e4dccc; }
+  .card .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .4px; color: #8a8576; line-height: 1.3; }
+  .card .val { font-family: Georgia, serif; font-size: 22px; margin-top: 5px; color: #3E4A3D; }
+  .card .sub { font-size: 11.5px; margin-top: 4px; color: #8a8576; line-height: 1.35; }
+  .card.good { background: #eaf0e4; border-color: #b6c4a3; }
+  .card.good .val { color: #4a6b34; }
+  .card.alert { background: #fbe9e7; border-color: #e0a99f; }
+  .card.alert .val { color: #b4442f; }
+  .card.wide { grid-column: 1 / -1; }
+  h2.sec { font-family: Georgia, serif; color: #3E4A3D; font-size: 17px; margin: 22px 0 9px; }
+  .panel { background: #fff; border-radius: 12px; border: 1px solid #e4dccc; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 9px 10px; text-align: right; border-bottom: 1px solid #efe9dd; vertical-align: middle; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { background: #f7f2e8; color: #6b6757; font-weight: 600; font-size: 10.5px; text-transform: uppercase; letter-spacing: .3px; }
+  tr.grp td { background: #efe9dd; font-weight: 700; color: #3E4A3D; font-size: 11px; text-transform: uppercase; letter-spacing: .3px; }
+  .svc { font-weight: 600; color: #2b2b28; }
+  .brk { font-size: 11px; color: #9a9483; margin-top: 2px; line-height: 1.35; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-left: 5px; }
+  .verde { background: #5a8a3c; } .amarillo { background: #d6a32e; } .rojo { background: #c14a3a; }
+  input.cell { width: 96px; padding: 7px 8px; border: 1px solid #d8cfbb; border-radius: 7px; text-align: right; font-size: 14px; background: #fdfbf6; }
+  input.cell.sm { width: 54px; }
+  input.cell.txt { width: 100%; text-align: left; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid #B89B5E; border-color: #B89B5E; }
+  .fld { width: 100%; padding: 10px; border: 1px solid #d8cfbb; border-radius: 7px; font-size: 15px; background: #fdfbf6; }
+  .lab { display: block; font-size: 12.5px; color: #4a4638; margin: 11px 0 3px; font-weight: 600; }
+  .pform { display: grid; grid-template-columns: 1fr 120px; gap: 9px 12px; align-items: center; }
+  .pform label { font-size: 13px; color: #4a4638; }
+  .pform input { padding: 8px 9px; border: 1px solid #d8cfbb; border-radius: 7px; text-align: right; font-size: 15px; background: #fdfbf6; }
+  .hint { font-size: 12.5px; color: #8a8576; margin: 8px 2px 0; line-height: 1.5; }
+  .note { background: #fff; border-left: 4px solid #B89B5E; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #4a4638; margin-bottom: 14px; line-height: 1.55; }
+  .note.red { border-left-color: #c14a3a; }
+  .note.green { border-left-color: #5a8a3c; }
+  .pill { display: inline-block; background: #ece4d4; color: #6b6757; border-radius: 20px; padding: 3px 10px; font-size: 12px; margin: 0 5px 5px 0; }
+  .bar { display: flex; height: 24px; border-radius: 6px; overflow: hidden; margin: 6px 0 12px; border: 1px solid #e4dccc; }
+  .bar span { display: flex; align-items: center; justify-content: center; font-size: 10.5px; color: #fff; overflow: hidden; white-space: nowrap; }
+  .addbtn { background: #3E4A3D; color: #F2EBE0; border: none; border-radius: 8px; padding: 11px 14px; font-size: 14px; cursor: pointer; width: 100%; margin-top: 12px; }
+  .addbtn.mini { padding: 9px; font-size: 13px; margin-top: 8px; }
+  .ghost { background: #eee; color: #666; border: none; border-radius: 7px; padding: 9px; font-size: 13px; cursor: pointer; width: 100%; margin-top: 6px; }
+  .delx { background: none; border: none; color: #c14a3a; cursor: pointer; font-size: 18px; padding: 0 4px; }
+  .cli-item { display: block; width: 100%; text-align: left; background: #fff; border: 1px solid #d8cfbb; border-radius: 8px; padding: 10px 12px; margin: 5px 0; font-size: 14px; cursor: pointer; }
+  .cli-item.nuevo { background: #eef3e8; border-color: #b6c4a3; color: #3E4A3D; font-weight: 600; }
+  .selbox { background: #eef3e8; border: 1px solid #b6c4a3; border-radius: 8px; padding: 11px 13px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+  .linkbtn { background: none; border: none; color: #7a6a3e; font-size: 12.5px; text-decoration: underline; cursor: pointer; }
+  .srow { background: #faf6ee; border: 1px solid #e4dccc; border-radius: 10px; padding: 11px; margin-bottom: 9px; }
+  .srow .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .srow .r2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .tach { text-decoration: line-through; color: #b0a996; }
+  .foot { text-align: center; font-size: 11.5px; color: #9a9483; margin-top: 26px; line-height: 1.6; }
+  .foot button { background: none; border: 1px solid #c9bfa9; color: #6b6757; border-radius: 7px; padding: 6px 12px; font-size: 12px; margin-top: 8px; cursor: pointer; }
+  .scroll { overflow-x: auto; }
+  .rango { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 14px; }
+  .rango > div { flex: 1; min-width: 120px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+"use strict";
+
+// ================= Datos por defecto =================
+const DEFAULTS = {
+  productos: [
+    { id: "silkey", nombre: "Tintura Silkey Millenium (c/amoníaco)", precioEnvase: 11000, contenido: 120, unidad: "g" },
+    { id: "ox20", nombre: "Oxidante 20 vol (Silkey)", precioEnvase: 25000, contenido: 5000, unidad: "ml" },
+    { id: "inoa", nombre: "Tintura Inoa (s/amoníaco)", precioEnvase: 31290, contenido: 60, unidad: "g" },
+    { id: "ox20inoa", nombre: "Oxidante 20 vol (Inoa)", precioEnvase: 34190, contenido: 1000, unidad: "ml" },
+    { id: "polvo", nombre: "Polvo decolorante", precioEnvase: 15000, contenido: 700, unidad: "g" },
+    { id: "ox30", nombre: "Oxidante 30 vol", precioEnvase: 30000, contenido: 5000, unidad: "ml" },
+    { id: "gorra", nombre: "Gorra de reflejos", precioEnvase: 2200, contenido: 1, unidad: "u" },
+    { id: "papel", nombre: "Papel (por colocación)", precioEnvase: 2200, contenido: 1, unidad: "u" },
+    { id: "nanoplex", nombre: "Nanoplex (alisado)", precioEnvase: 50000, contenido: 300, unidad: "ml" },
+    { id: "protector", nombre: "Protector térmico", precioEnvase: 6500, contenido: 250, unidad: "ml" },
+    { id: "spray", nombre: "Spray fijador", precioEnvase: 15000, contenido: 390, unidad: "ml" },
+    { id: "horquillas", nombre: "Horquillas", precioEnvase: 15000, contenido: 200, unidad: "g" },
+    { id: "ampolla", nombre: "Ampolla de nutrición", precioEnvase: 25000, contenido: 1, unidad: "u" },
+  ],
+  procs: [
+    { id: "corte", grupo: "Corte", nombre: "Corte", precio: 60000, min: 40, receta: [] },
+    { id: "flequillo", grupo: "Corte", nombre: "Flequillo", precio: 25000, min: 10, receta: [] },
+    { id: "raiz-am-b", grupo: "Color raíz · con amoníaco", nombre: "Raíz c/amoníaco · Bajo", precio: 80000, min: 60, receta: [["silkey", 20], ["ox20", 20]] },
+    { id: "raiz-am-a", grupo: "Color raíz · con amoníaco", nombre: "Raíz c/amoníaco · Alto", precio: 100000, min: 60, receta: [["silkey", 30], ["ox20", 30]] },
+    { id: "raiz-sam-b", grupo: "Color raíz · sin amoníaco", nombre: "Raíz s/amoníaco (Inoa) · Bajo", precio: 100000, min: 60, receta: [["inoa", 20], ["ox20inoa", 20]] },
+    { id: "raiz-sam-a", grupo: "Color raíz · sin amoníaco", nombre: "Raíz s/amoníaco (Inoa) · Alto", precio: 120000, min: 60, receta: [["inoa", 30], ["ox20inoa", 30]] },
+    { id: "comp-am-b", grupo: "Color completo · con amoníaco", nombre: "Completo c/amoníaco · Bajo", precio: 100000, min: 75, receta: [["silkey", 40], ["ox20", 40]] },
+    { id: "comp-am-a", grupo: "Color completo · con amoníaco", nombre: "Completo c/amoníaco · Alto", precio: 120000, min: 75, receta: [["silkey", 60], ["ox20", 60]] },
+    { id: "comp-sam-b", grupo: "Color completo · sin amoníaco", nombre: "Completo s/amoníaco (Inoa) · Bajo", precio: 120000, min: 75, receta: [["inoa", 40], ["ox20inoa", 40]] },
+    { id: "comp-sam-a", grupo: "Color completo · sin amoníaco", nombre: "Completo s/amoníaco (Inoa) · Alto", precio: 140000, min: 75, receta: [["inoa", 60], ["ox20inoa", 60]] },
+    { id: "refl-gorra-b", grupo: "Reflejos con gorra", nombre: "Reflejos gorra · Bajo", precio: 160000, min: 120, receta: [["polvo", 30], ["ox30", 80], ["gorra", 1]] },
+    { id: "refl-gorra-a", grupo: "Reflejos con gorra", nombre: "Reflejos gorra · Alto", precio: 180000, min: 120, receta: [["polvo", 50], ["ox30", 120], ["gorra", 1]] },
+    { id: "refl-papel-b", grupo: "Reflejos con papel", nombre: "Reflejos papel · Bajo", precio: 200000, min: 180, receta: [["polvo", 30], ["ox30", 80], ["papel", 1]] },
+    { id: "refl-papel-a", grupo: "Reflejos con papel", nombre: "Reflejos papel · Alto", precio: 240000, min: 180, receta: [["polvo", 50], ["ox30", 120], ["papel", 1]] },
+    { id: "alis-b", grupo: "Alisado sin formol", nombre: "Alisado · Bajo", precio: 200000, min: 120, receta: [["nanoplex", 100]] },
+    { id: "alis-a", grupo: "Alisado sin formol", nombre: "Alisado · Alto", precio: 240000, min: 120, receta: [["nanoplex", 150]] },
+    { id: "alis-flequillo", grupo: "Alisado sin formol", nombre: "Alisado flequillo", precio: 50000, min: 15, receta: [["nanoplex", 15]] },
+    { id: "alis-f-b", grupo: "Alisado con formol", nombre: "Alisado · Bajo", precio: 200000, min: 120, receta: [] },
+    { id: "alis-f-a", grupo: "Alisado con formol", nombre: "Alisado · Alto", precio: 240000, min: 120, receta: [] },
+    { id: "alis-f-flequillo", grupo: "Alisado con formol", nombre: "Alisado flequillo", precio: 50000, min: 15, receta: [] },
+    { id: "nutri-ampolla", grupo: "Nutrición", nombre: "Ampolla", precio: 50000, min: 30, receta: [["ampolla", 1]] },
+    { id: "desg-b", grupo: "Desgaste (= reflejos con papel)", nombre: "Desgaste · Bajo", precio: 200000, min: 180, receta: [["polvo", 30], ["ox30", 80], ["papel", 1]] },
+    { id: "desg-a", grupo: "Desgaste (= reflejos con papel)", nombre: "Desgaste · Alto", precio: 240000, min: 180, receta: [["polvo", 50], ["ox30", 120], ["papel", 1]] },
+    { id: "contorno-solo", grupo: "Contorno iluminado", nombre: "Contorno solo", precio: 100000, min: 30, receta: [["polvo", 10], ["ox30", 20], ["papel", 1]] },
+    { id: "contorno-combo", grupo: "Contorno iluminado", nombre: "Contorno + otro proc.", precio: 60000, min: 30, receta: [["polvo", 10], ["ox30", 20], ["papel", 1]] },
+    { id: "pei-brush-b", grupo: "Peinado brushing / planchita", nombre: "Brushing/planchita · Bajo", precio: 80000, min: 40, receta: [["protector", 2], ["spray", 5]] },
+    { id: "pei-brush-a", grupo: "Peinado brushing / planchita", nombre: "Brushing/planchita · Alto", precio: 120000, min: 40, receta: [["protector", 2], ["spray", 5]] },
+    { id: "pei-semi-b", grupo: "Peinado semi recogido", nombre: "Semi recogido · Bajo", precio: 120000, min: 60, receta: [["protector", 2], ["spray", 5], ["horquillas", 25]] },
+    { id: "pei-semi-a", grupo: "Peinado semi recogido", nombre: "Semi recogido · Alto", precio: 130000, min: 60, receta: [["protector", 2], ["spray", 5], ["horquillas", 25]] },
+    { id: "pei-reco", grupo: "Peinado recogido", nombre: "Recogido · Bajo", precio: 160000, min: 60, receta: [["protector", 2], ["spray", 5], ["horquillas", 50]] },
+  ],
+  fijos: [
+    { nombre: "Seguro auto", monto: 200000 },
+    { nombre: "Depreciación auto (Peugeot 207)", monto: 50000 },
+    { nombre: "Publicidad / ads Instagram", monto: 50000 },
+    { nombre: "Patente", monto: 30000 },
+    { nombre: "Celular + internet", monto: 30000 },
+    { nombre: "Canva + herramientas", monto: 10000 },
+    { nombre: "Monotributo (consultar contador)", monto: 0 },
+  ],
+  clientas: [],
+  turnos: [],
+  gastos: [],
+  params: {
+    naftaLitro: 2000, consumo: 10, desgasteKm: 60, kmViaje: 20, peaje: 0,
+    ingresoObjetivo: 2250000, horasMes: 150, tiempoViajeMin: 40, margen: 30, turnosEstim: 30,
+  },
+};
+
+const CATEGORIAS = ["Insumos", "Auto (nafta, cubiertas, service)", "Equipo / Activo", "Otros"];
+
+// ================= Estado + guardado =================
+const KEY = "tati_costos_v1";
+let state, tab = "servicios";
+const ui = { cliQuery: "", histNom: "", histDesde: "", histHasta: "", gDesde: "", gHasta: "", resDesde: "", resHasta: "" };
+let draft = emptyDraft();
+let gdraft = emptyGasto();
+
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+function iso(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function hoyStr() { return iso(new Date()); }
+
+function emptyDraft() { return { clientaId: null, nuevaCliente: null, fecha: hoyStr(), entrada: "", salida: "", servicios: [], editId: null }; }
+function emptyRow() { return { procId: "", precioLista: 0, descTipo: "none", descValor: 0, precioFinal: 0, manual: false, obs: "" }; }
+function emptyGasto() { return { productoId: "", nuevo: false, nombre: "", unidad: "u", categoria: "Insumos", fecha: hoyStr(), envases: 1, precioEnvase: 0 }; }
+
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return clone(DEFAULTS);
+    const s = JSON.parse(raw);
+    return {
+      productos: mergeProductos(s.productos),
+      procs: mergeProcs(s.procs),
+      fijos: s.fijos || clone(DEFAULTS.fijos),
+      clientas: s.clientas || [],
+      turnos: (s.turnos || []).map(migrarTurno),
+      gastos: s.gastos || [],
+      params: Object.assign(clone(DEFAULTS.params), s.params || {}),
+    };
+  } catch (e) { return clone(DEFAULTS); }
+}
+// Trae los servicios/productos nuevos del código, conservando los precios que la usuaria ya editó.
+function mergeProcs(saved) {
+  const byId = {}; (saved || []).forEach(p => byId[p.id] = p);
+  const merged = DEFAULTS.procs.map(d => { const s = byId[d.id]; return s ? Object.assign({}, d, { precio: s.precio != null ? s.precio : d.precio }) : clone(d); });
+  (saved || []).forEach(p => { if (!DEFAULTS.procs.find(d => d.id === p.id)) merged.push(p); });
+  return merged;
+}
+function mergeProductos(saved) {
+  const byId = {}; (saved || []).forEach(p => byId[p.id] = p);
+  const merged = DEFAULTS.productos.map(d => { const s = byId[d.id]; return s ? Object.assign({}, d, { precioEnvase: s.precioEnvase != null ? s.precioEnvase : d.precioEnvase, contenido: s.contenido != null ? s.contenido : d.contenido }) : clone(d); });
+  (saved || []).forEach(p => { if (!DEFAULTS.productos.find(d => d.id === p.id)) merged.push(p); });
+  return merged;
+}
+function migrarTurno(t) {
+  if (t.servicios) return t;
+  const proc = DEFAULTS.procs.find(p => p.id === t.procId);
+  const precio = proc ? proc.precio : 0;
+  return { id: t.id || ("t_" + Math.random()), fecha: t.fecha, clientaId: t.clientaId, entrada: t.entrada, salida: t.salida,
+    servicios: t.procId ? [{ procId: t.procId, precioLista: precio, descTipo: "none", descValor: 0, precioFinal: precio, obs: t.obs || "" }] : [] };
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+// ================= Utilidades =================
+const fmt = (n) => "$" + Math.round(n || 0).toLocaleString("es-AR");
+const pct = (n) => Math.round(n * 100) + "%";
+const num = (v) => { const x = parseFloat(v); return isNaN(x) ? 0 : x; };
+const esc = (s) => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const nombreCli = (id) => { const c = state.clientas.find(x => x.id === id); return c ? c.nombre + " " + c.apellido : "?"; };
+const nombreProc = (id) => { const p = state.procs.find(x => x.id === id); return p ? p.nombre : "?"; };
+function horas(t) { return t.entrada && t.salida ? ((new Date("1970-01-01T" + t.salida) - new Date("1970-01-01T" + t.entrada)) / 3600000) : 0; }
+function inRange(f, d, h) { return (!d || f >= d) && (!h || f <= h); }
+function mesesEnRango(d, h) { if (!d || !h) return 1; const a = new Date(d), b = new Date(h); return Math.max(1, (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth()) + 1); }
+
+// ================= Cálculo de precios (teórico, para decidir cuánto cobrar) =================
+function compute() {
+  const p = state.params;
+  const costoUnit = {};
+  state.productos.forEach((x) => costoUnit[x.id] = x.contenido > 0 ? x.precioEnvase / x.contenido : 0);
+  const tarifaHora = p.horasMes > 0 ? p.ingresoObjetivo / p.horasMes : 0;
+  const naftaKm = (p.naftaLitro * p.consumo) / 100;
+  const costoViaje = p.kmViaje * (naftaKm + p.desgasteKm) + p.peaje;
+  const fijosMes = state.fijos.reduce((s, f) => s + num(f.monto), 0);
+  const fijoPorTurno = p.turnosEstim > 0 ? fijosMes / p.turnosEstim : 0;
+  const filas = state.procs.map((pr) => {
+    const insumos = pr.receta.reduce((s, r) => s + (costoUnit[r[0]] || 0) * r[1], 0);
+    const tiempoCosto = ((pr.min + p.tiempoViajeMin) / 60) * tarifaHora;
+    const costoTotal = insumos + costoViaje + tiempoCosto + fijoPorTurno;
+    const objetivo = costoTotal * (1 + p.margen / 100);
+    const margenActual = pr.precio > 0 ? (pr.precio - costoTotal) / pr.precio : -1;
+    let estado = "rojo";
+    if (pr.precio >= objetivo) estado = "verde"; else if (pr.precio >= costoTotal) estado = "amarillo";
+    return Object.assign({}, pr, { insumos, tiempoCosto, costoTotal, piso: costoTotal, objetivo, margenActual, estado });
+  });
+  return { costoUnit, tarifaHora, naftaKm, costoViaje, fijosMes, fijoPorTurno, filas };
+}
+
+// ================= Render =================
+function render() {
+  const c = compute();
+  const tabs = [["servicios", "Servicios"], ["gastos", "Gastos"], ["resultados", "Resultados"], ["precios", "Precios"], ["insumos", "Insumos"], ["param", "Ajustes"]];
+  let h = '<div class="head"><h1>Costos & Rentabilidad — Tati</h1><p>Peluquería a domicilio</p></div>';
+  h += '<div class="nav">' + tabs.map(t => '<button data-action="tab" data-tab="' + t[0] + '" class="' + (tab === t[0] ? "on" : "") + '">' + t[1] + '</button>').join("") + '</div>';
+  h += '<div class="body">';
+  if (tab === "servicios") h += viewServicios(c);
+  else if (tab === "gastos") h += viewGastos(c);
+  else if (tab === "resultados") h += viewResultados(c);
+  else if (tab === "precios") h += viewPrecios(c);
+  else if (tab === "insumos") h += viewInsumos(c);
+  else if (tab === "param") h += viewParam(c);
+  h += foot();
+  h += '</div>';
+  document.getElementById("app").innerHTML = h;
+}
+
+// ---------- SERVICIOS ----------
+function viewServicios(c) {
+  let h = '<div class="note"><b>Cargá cada turno que hiciste.</b> Elegí la clienta, sumá los servicios que le hiciste (podés poner varios), aplicá descuento si corresponde y guardá. Esto arma tu facturación real.</div>';
+
+  // Clienta
+  h += '<h2 class="sec">Clienta</h2>';
+  if (draft.clientaId) {
+    h += '<div class="selbox"><span><b>' + esc(nombreCli(draft.clientaId)) + '</b></span><button class="linkbtn" data-action="cambiar-cli">cambiar</button></div>';
+  } else if (draft.nuevaCliente) {
+    h += '<div class="note"><b>Nueva clienta</b>';
+    h += lab("Nombre") + '<input class="fld" id="nc-nombre" value="' + esc(draft.nuevaCliente.nombre || "") + '">';
+    h += lab("Apellido") + '<input class="fld" id="nc-apellido" value="' + esc(draft.nuevaCliente.apellido || "") + '">';
+    h += lab("Teléfono") + '<input class="fld" inputmode="tel" id="nc-tel">';
+    h += lab("Instagram") + '<input class="fld" id="nc-ig" placeholder="@usuario">';
+    h += lab("Mail") + '<input class="fld" inputmode="email" id="nc-mail">';
+    h += lab("Dirección") + '<input class="fld" id="nc-dir">';
+    h += lab("Comentarios") + '<textarea class="fld" id="nc-com" style="height:56px"></textarea>';
+    h += '<button class="addbtn" data-action="guardar-cli">Guardar clienta</button>';
+    h += '<button class="ghost" data-action="cancelar-cli">Cancelar</button></div>';
+  } else {
+    h += '<input class="fld" id="cli-search" placeholder="Escribí el nombre..." value="' + esc(ui.cliQuery) + '" autocomplete="off">';
+    h += '<div id="cli-results">' + cliResultsHtml(ui.cliQuery) + '</div>';
+  }
+
+  // Turno (solo si hay clienta)
+  if (draft.clientaId) {
+    if (draft.editId) h += '<div class="note green"><b>Editando un turno ya cargado.</b> Cambiá lo que necesites (incluida la fecha abajo) y guardá los cambios.</div>';
+
+    h += '<h2 class="sec">Servicios realizados</h2>';
+    draft.servicios.forEach((r, i) => {
+      const desc = r.precioLista - r.precioFinal;
+      h += '<div class="srow"><div class="top"><b style="font-size:13px;color:#3E4A3D">Servicio ' + (i + 1) + '</b><button class="delx" data-action="del-srv" data-idx="' + i + '">×</button></div>';
+      h += '<select class="fld" data-kind="srv" data-idx="' + i + '" data-field="proc"><option value="">Elegí el servicio…</option>';
+      let g = null;
+      state.procs.forEach(p => {
+        if (p.grupo !== g) { if (g !== null) h += '</optgroup>'; h += '<optgroup label="' + esc(p.grupo) + '">'; g = p.grupo; }
+        h += '<option value="' + p.id + '"' + (r.procId === p.id ? " selected" : "") + '>' + esc(p.nombre) + '</option>';
+      });
+      h += '</optgroup></select>';
+      if (r.procId) {
+        h += '<div class="r2"><div>' + lab("Descuento") + '<select class="fld" data-kind="srv" data-idx="' + i + '" data-field="desctipo">'
+          + '<option value="none"' + (r.descTipo === "none" ? " selected" : "") + '>Sin descuento</option>'
+          + '<option value="$"' + (r.descTipo === "$" ? " selected" : "") + '>En $</option>'
+          + '<option value="%"' + (r.descTipo === "%" ? " selected" : "") + '>En %</option></select></div>';
+        h += '<div>' + lab(r.descTipo === "%" ? "Valor (%)" : "Valor ($)") + '<input class="fld" inputmode="numeric" data-kind="srv" data-idx="' + i + '" data-field="descval" value="' + r.descValor + '"' + (r.descTipo === "none" ? " disabled" : "") + '></div></div>';
+        h += '<div class="r2"><div>' + lab("Precio de lista") + '<input class="fld" value="' + fmt(r.precioLista) + '" disabled style="color:#9a9483"></div>';
+        h += '<div>' + lab("Precio final") + '<input class="fld" inputmode="numeric" data-kind="srv" data-idx="' + i + '" data-field="final" value="' + r.precioFinal + '"></div></div>';
+        if (desc > 0) h += '<div style="font-size:12px;color:#a9744f;margin-top:6px">Descuento aplicado: ' + fmt(desc) + '</div>';
+      }
+      h += '</div>';
+    });
+    h += '<button class="addbtn mini" data-action="add-srv">+ Agregar otro servicio</button>';
+
+    const totTurno = draft.servicios.reduce((s, r) => s + (r.procId ? r.precioFinal : 0), 0);
+    h += '<div style="text-align:right;margin-top:12px;font-size:14px">Total del turno: <b class="tot">' + fmt(totTurno) + '</b></div>';
+
+    h += '<h2 class="sec">Fecha del turno</h2>';
+    h += '<input class="fld" type="date" id="t-fecha" data-kind="df" data-field="fecha" value="' + draft.fecha + '">';
+    h += '<div class="hint">Es el día en que hiciste el servicio. Dejalo bien antes de guardar.</div>';
+
+    h += '<button class="addbtn" data-action="guardar-turno">' + (draft.editId ? "Guardar cambios" : "Guardar turno") + '</button>';
+    h += '<button class="ghost" data-action="reset-turno">Cancelar</button>';
+  }
+
+  // Histórico
+  h += '<h2 class="sec">Histórico de turnos</h2>';
+  h += '<input class="fld" data-kind="ui" data-field="histNom" placeholder="Filtrar por clienta..." value="' + esc(ui.histNom) + '" style="margin-bottom:8px">';
+  h += '<div class="rango"><div>' + lab("Desde") + '<input class="fld" type="date" data-kind="ui" data-field="histDesde" value="' + ui.histDesde + '"></div>';
+  h += '<div>' + lab("Hasta") + '<input class="fld" type="date" data-kind="ui" data-field="histHasta" value="' + ui.histHasta + '"></div></div>';
+
+  const turnos = state.turnos.filter(t => {
+    const nom = nombreCli(t.clientaId).toLowerCase();
+    return (!ui.histNom || nom.includes(ui.histNom.toLowerCase())) && inRange(t.fecha, ui.histDesde, ui.histHasta);
+  }).sort((a, b) => (b.fecha || "").localeCompare(a.fecha || ""));
+
+  if (turnos.length === 0) {
+    h += '<div class="note" style="color:#9a9483">No hay turnos cargados en este filtro.</div>';
+  } else {
+    turnos.forEach(t => {
+      const tot = t.servicios.reduce((s, r) => s + r.precioFinal, 0);
+      const hs = horas(t);
+      h += '<div class="panel" style="padding:11px 13px;margin-bottom:9px"><div style="display:flex;justify-content:space-between"><div><b>' + esc(nombreCli(t.clientaId)) + '</b><div class="brk">' + (t.fecha || "—") + (hs ? " · " + hs.toFixed(1) + " h" : "") + '</div></div><div style="text-align:right"><b class="tot" style="font-size:16px">' + fmt(tot) + '</b><br><button class="linkbtn" data-action="editar-turno" data-id="' + t.id + '">editar</button> · <button class="linkbtn" data-action="del-turno" data-id="' + t.id + '">borrar</button></div></div>';
+      t.servicios.forEach(r => {
+        const desc = r.precioLista - r.precioFinal;
+        h += '<div style="font-size:12.5px;color:#6b6757;margin-top:5px">• ' + esc(nombreProc(r.procId)) + ' — ' + (desc > 0 ? '<span class="tach">' + fmt(r.precioLista) + '</span> ' : '') + fmt(r.precioFinal) + (r.obs ? ' <span style="color:#9a9483">(' + esc(r.obs) + ')</span>' : '') + '</div>';
+      });
+      h += '</div>';
+    });
+  }
+  return h;
+}
+
+function cliResultsHtml(q) {
+  q = (q || "").trim().toLowerCase();
+  if (!q) return "";
+  const m = state.clientas.filter(c => (c.nombre + " " + c.apellido).toLowerCase().includes(q));
+  let h = "";
+  m.slice(0, 8).forEach(c => h += '<button class="cli-item" data-action="sel-cli" data-id="' + c.id + '">' + esc(c.nombre + " " + c.apellido) + (c.tel ? ' · ' + esc(c.tel) : '') + '</button>');
+  h += '<button class="cli-item nuevo" data-action="nueva-cli">+ Cargar nueva clienta</button>';
+  return h;
+}
+
+// ---------- GASTOS ----------
+function viewGastos(c) {
+  let h = '<div class="note"><b>Registrá lo que comprás.</b> Insumos, nafta, cubiertas, equipos. Todo cuenta como gasto del mes en que lo pagás. Los meses con una compra grande (ej: un secador) van a mostrar menos ganancia — es normal.</div>';
+
+  h += '<h2 class="sec">Cargar gasto</h2>';
+  h += lab("Producto") + '<select class="fld" data-kind="gd" data-field="productoId"><option value="">Elegí un producto…</option>';
+  state.productos.forEach(p => h += '<option value="' + p.id + '"' + (gdraft.productoId === p.id ? " selected" : "") + '>' + esc(p.nombre) + '</option>');
+  h += '<option value="__new__"' + (gdraft.nuevo ? " selected" : "") + '>+ Producto nuevo</option></select>';
+
+  if (gdraft.nuevo) {
+    h += lab("Nombre del producto nuevo") + '<input class="fld" id="g-nombre" value="' + esc(gdraft.nombre) + '">';
+    h += lab("Unidad (g / ml / u)") + '<input class="fld" id="g-unidad" value="' + esc(gdraft.unidad) + '">';
+  }
+
+  h += lab("Categoría") + '<select class="fld" data-kind="gd" data-field="categoria">';
+  CATEGORIAS.forEach(cat => h += '<option value="' + esc(cat) + '"' + (gdraft.categoria === cat ? " selected" : "") + '>' + esc(cat) + '</option>');
+  h += '</select>';
+
+  h += '<div class="rango"><div>' + lab("Fecha") + '<input class="fld" type="date" id="g-fecha" value="' + gdraft.fecha + '"></div>';
+  h += '<div>' + lab("Cant. envases") + '<input class="fld" inputmode="numeric" id="g-envases" value="' + gdraft.envases + '"></div>';
+  h += '<div>' + lab("Precio x envase") + '<input class="fld" inputmode="numeric" id="g-precio" value="' + gdraft.precioEnvase + '"></div></div>';
+  h += '<div class="hint" id="g-total-hint"></div>';
+  h += '<button class="addbtn" data-action="guardar-gasto">Guardar gasto</button>';
+  if (gdraft.productoId && gdraft.productoId !== "__new__") h += '<div class="hint">Al guardar, se actualiza el precio de este insumo en la calculadora.</div>';
+
+  // Histórico gastos
+  h += '<h2 class="sec">Histórico de gastos</h2>';
+  h += '<div class="rango"><div>' + lab("Desde") + '<input class="fld" type="date" data-kind="ui" data-field="gDesde" value="' + ui.gDesde + '"></div>';
+  h += '<div>' + lab("Hasta") + '<input class="fld" type="date" data-kind="ui" data-field="gHasta" value="' + ui.gHasta + '"></div></div>';
+
+  const gastos = state.gastos.filter(g => inRange(g.fecha, ui.gDesde, ui.gHasta)).sort((a, b) => (b.fecha || "").localeCompare(a.fecha || ""));
+  const totG = gastos.reduce((s, g) => s + g.monto, 0);
+  if (gastos.length === 0) {
+    h += '<div class="note" style="color:#9a9483">No hay gastos cargados en este filtro.</div>';
+  } else {
+    h += '<div style="text-align:right;margin-bottom:8px">Total del filtro: <b class="tot">' + fmt(totG) + '</b></div>';
+    h += '<div class="panel scroll"><table><thead><tr><th>Fecha</th><th>Producto</th><th>Cat.</th><th>Monto</th><th></th></tr></thead><tbody>';
+    gastos.forEach(g => {
+      h += '<tr><td>' + (g.fecha || "—") + '</td><td>' + esc(g.nombre) + (g.envases > 1 ? ' <span style="color:#9a9483">x' + g.envases + '</span>' : '') + '</td><td style="font-size:11px">' + esc((g.categoria || "").split(" ")[0]) + '</td><td>' + fmt(g.monto) + '</td><td><button class="linkbtn" data-action="del-gasto" data-id="' + g.id + '">×</button></td></tr>';
+    });
+    h += '</tbody></table></div>';
+  }
+  return h;
+}
+
+// ---------- RESULTADOS ----------
+function viewResultados(c) {
+  const turnosR = state.turnos.filter(t => inRange(t.fecha, ui.resDesde, ui.resHasta));
+  let ingresos = 0, lista = 0, descuento = 0, nServ = 0;
+  turnosR.forEach(t => t.servicios.forEach(s => { ingresos += s.precioFinal; lista += s.precioLista; descuento += (s.precioLista - s.precioFinal); nServ++; }));
+  const gastosR = state.gastos.filter(g => inRange(g.fecha, ui.resDesde, ui.resHasta));
+  const porCat = {}; gastosR.forEach(g => porCat[g.categoria] = (porCat[g.categoria] || 0) + g.monto);
+  const gastosTotal = gastosR.reduce((s, g) => s + g.monto, 0);
+  const meses = mesesEnRango(ui.resDesde, ui.resHasta);
+  const fijosPeriodo = c.fijosMes * meses;
+  const resultado = ingresos - gastosTotal - fijosPeriodo;
+  const metaPeriodo = state.params.ingresoObjetivo * meses;
+
+  let h = '<div class="note"><b>Estado de resultados real.</b> Elegí el período. Toma los servicios cargados (ingresos) menos los gastos cargados y los costos fijos de esos meses. Es la plata que realmente te queda.</div>';
+  h += '<div class="rango"><div>' + lab("Desde") + '<input class="fld" type="date" data-kind="ui" data-field="resDesde" value="' + ui.resDesde + '"></div>';
+  h += '<div>' + lab("Hasta") + '<input class="fld" type="date" data-kind="ui" data-field="resHasta" value="' + ui.resHasta + '"></div></div>';
+
+  h += '<div class="cards">';
+  h += card("Ingresos (" + nServ + " servicios)", fmt(ingresos), turnosR.length + " turnos · " + meses + (meses > 1 ? " meses" : " mes"), "");
+  h += card("Gastos + fijos", fmt(gastosTotal + fijosPeriodo), fmt(gastosTotal) + " gastos + " + fmt(fijosPeriodo) + " fijos", "");
+  h += card("Resultado del período", fmt(resultado), resultado >= 0 ? "es lo que te queda a vos" : "estás en rojo", resultado >= 0 ? "good" : "alert");
+  h += card("Descuentos que hiciste", fmt(descuento), lista > 0 ? pct(descuento / lista) + " sobre precio de lista" : "—", "");
+  h += '</div>';
+
+  // Barra
+  const seg = [["Gastos", gastosTotal, "#B89B5E"], ["Costos fijos", fijosPeriodo, "#a9744f"], ["Te queda", Math.max(resultado, 0), "#3E4A3D"]];
+  const tot = seg.reduce((s, x) => s + x[1], 0) || 1;
+  h += '<h2 class="sec">A dónde fue cada peso</h2><div class="bar">';
+  seg.filter(s => s[1] > 0).forEach(s => h += '<span style="width:' + (s[1] / tot * 100) + '%;background:' + s[2] + '">' + (s[1] / tot > 0.12 ? s[0] : "") + '</span>');
+  h += '</div><div>' + seg.map(s => '<span class="pill">' + s[0] + ': ' + fmt(s[1]) + '</span>').join("") + '</div>';
+
+  // Gastos por categoría
+  h += '<h2 class="sec">Gastos por categoría</h2><div class="panel"><table><tbody>';
+  const cats = Object.keys(porCat);
+  if (cats.length === 0) h += '<tr><td style="color:#9a9483">Sin gastos en el período</td><td></td></tr>';
+  else cats.forEach(k => h += '<tr><td>' + esc(k) + '</td><td>' + fmt(porCat[k]) + '</td></tr>');
+  h += '<tr><td><b>Costos fijos (' + meses + (meses > 1 ? ' meses' : ' mes') + ')</b></td><td><b>' + fmt(fijosPeriodo) + '</b></td></tr>';
+  h += '</tbody></table></div>';
+
+  h += '<h2 class="sec">Contra tu meta</h2>';
+  h += '<div class="note ' + (resultado >= metaPeriodo ? "green" : "") + '">Tu meta es ' + fmt(state.params.ingresoObjetivo) + '/mes → ' + fmt(metaPeriodo) + ' en este período de ' + meses + (meses > 1 ? ' meses' : ' mes') + '. Te queda ' + fmt(resultado) + ' (' + (metaPeriodo > 0 ? pct(resultado / metaPeriodo) : "—") + ' de la meta).</div>';
+  return h;
+}
+
+function card(lbl, val, sub, cls) {
+  return '<div class="card ' + (cls || "") + '"><div class="lbl">' + lbl + '</div><div class="val">' + val + '</div><div class="sub">' + sub + '</div></div>';
+}
+
+// ---------- PRECIOS ----------
+function viewPrecios(c) {
+  let h = '<div class="note">Acá se decide <b>cuánto cobrar</b> (no es la facturación real, eso está en Resultados). El <b>piso</b> cubre todos los costos con ganancia cero. El <b>objetivo</b> es el piso + ' + state.params.margen + '% de ganancia. <span class="dot verde"></span> bien · <span class="dot amarillo"></span> cubre sin la ganancia buscada · <span class="dot rojo"></span> por debajo del costo. Editá el precio y se guarda solo.</div>';
+  h += '<div class="panel scroll"><table><thead><tr><th>Servicio</th><th>Precio</th><th>Piso</th><th>Objetivo</th><th>Margen</th></tr></thead><tbody>';
+  let g = null;
+  c.filas.forEach((f) => {
+    if (f.grupo !== g) { h += '<tr class="grp"><td colspan="5">' + esc(f.grupo) + '</td></tr>'; g = f.grupo; }
+    const mc = f.margenActual < 0 ? "#c14a3a" : (f.margenActual < state.params.margen / 100 ? "#d6a32e" : "#5a8a3c");
+    h += '<tr><td><div class="svc">' + esc(f.nombre) + '<span class="dot ' + f.estado + '"></span></div>'
+      + '<div class="brk">Costo ' + fmt(f.costoTotal) + ' · ins ' + fmt(f.insumos) + ' · viaje ' + fmt(c.costoViaje) + ' · tiempo ' + fmt(f.tiempoCosto) + ' · fijos ' + fmt(c.fijoPorTurno) + '</div></td>'
+      + '<td><input class="cell" inputmode="numeric" data-kind="proc" data-id="' + f.id + '" data-field="precio" value="' + f.precio + '"></td>'
+      + '<td>' + fmt(f.piso) + '</td><td style="color:#3E4A3D;font-weight:600">' + fmt(f.objetivo) + '</td>'
+      + '<td style="color:' + mc + ';font-weight:600">' + (f.precio > 0 ? pct(f.margenActual) : "—") + '</td></tr>';
+  });
+  h += '</tbody></table></div>';
+  h += '<div class="hint">Los costos fijos se reparten entre ' + state.params.turnosEstim + ' turnos/mes estimados (editable en Ajustes). El costo de viaje y tiempo son teóricos, para poner precio; el gasto real de nafta se carga en Gastos.</div>';
+  return h;
+}
+
+// ---------- INSUMOS ----------
+function viewInsumos(c) {
+  let h = '<div class="note"><b>Precios de referencia de los productos.</b> Definen el costo teórico de cada servicio. Cuando cargás una compra en Gastos, el precio de acá se actualiza solo.</div>';
+  h += '<h2 class="sec">Productos</h2><div class="panel scroll"><table><thead><tr><th>Producto</th><th>Precio envase</th><th>Contenido</th><th>Costo/unidad</th></tr></thead><tbody>';
+  state.productos.forEach((p) => {
+    h += '<tr><td><div class="svc">' + esc(p.nombre) + '</div></td>'
+      + '<td><input class="cell" inputmode="numeric" data-kind="producto" data-id="' + p.id + '" data-field="precioEnvase" value="' + p.precioEnvase + '"></td>'
+      + '<td><input class="cell sm" inputmode="numeric" data-kind="producto" data-id="' + p.id + '" data-field="contenido" value="' + p.contenido + '"> ' + p.unidad + '</td>'
+      + '<td>' + fmt(c.costoUnit[p.id]) + '/' + p.unidad + '</td></tr>';
+  });
+  h += '</tbody></table></div>';
+  h += '<h2 class="sec">Recetas por servicio</h2><div class="panel scroll"><table><thead><tr><th>Servicio</th><th style="text-align:left">Usa</th><th>Insumos</th></tr></thead><tbody>';
+  state.procs.forEach((p) => {
+    const ins = p.receta.reduce((s, r) => s + (c.costoUnit[r[0]] || 0) * r[1], 0);
+    const det = p.receta.length === 0 ? "— sin insumos —" : p.receta.map((r) => {
+      const prod = state.productos.find((x) => x.id === r[0]);
+      return r[1] + (prod ? prod.unidad : "") + " " + (prod ? prod.nombre.split(" (")[0] : r[0]);
+    }).join("  ·  ");
+    h += '<tr><td><div class="svc">' + esc(p.nombre) + '</div></td><td style="text-align:left;color:#6b6757;font-size:12px">' + esc(det) + '</td><td><b>' + fmt(ins) + '</b></td></tr>';
+  });
+  h += '</tbody></table></div>';
+  return h;
+}
+
+// ---------- AJUSTES ----------
+function viewParam(c) {
+  const p = state.params;
+  let h = '<h2 class="sec">Tiempo y sueldo</h2><div class="pform">';
+  h += pf("Ingreso mensual objetivo", "ingresoObjetivo", p.ingresoObjetivo);
+  h += pf("Horas reales de trabajo / mes", "horasMes", p.horasMes);
+  h += pf("Viaje por turno (min)", "tiempoViajeMin", p.tiempoViajeMin);
+  h += pf("Turnos estimados / mes", "turnosEstim", p.turnosEstim);
+  h += '</div><p class="hint">Tarifa por hora (piso de costo): <b>' + fmt(c.tarifaHora) + '</b>. Los turnos estimados sirven para repartir los costos fijos en el precio de cada servicio.</p>';
+
+  h += '<h2 class="sec">Auto (para calcular precios)</h2><div class="pform">';
+  h += pf("Nafta ($/litro)", "naftaLitro", p.naftaLitro);
+  h += pf("Consumo (L/100 km)", "consumo", p.consumo);
+  h += pf("Desgaste ($/km)", "desgasteKm", p.desgasteKm);
+  h += pf("Km por viaje (ida+vuelta)", "kmViaje", p.kmViaje);
+  h += pf("Peaje por viaje", "peaje", p.peaje);
+  h += '</div><p class="hint">Costo de viaje por turno: <b>' + fmt(c.costoViaje) + '</b>. Esto se usa solo para poner precio; la nafta real que gastás se carga en Gastos.</p>';
+
+  h += '<h2 class="sec">Margen de ganancia</h2><div class="pform">' + pf("Margen objetivo (%)", "margen", p.margen) + '</div>';
+
+  h += '<h2 class="sec">Costos fijos mensuales — ' + fmt(c.fijosMes) + '/mes</h2><div class="panel"><table><thead><tr><th>Concepto</th><th>Monto/mes</th><th></th></tr></thead><tbody>';
+  state.fijos.forEach((f, i) => {
+    h += '<tr><td><input class="cell txt" data-kind="fijo" data-idx="' + i + '" data-field="nombre" value="' + esc(f.nombre) + '"></td>'
+      + '<td><input class="cell" inputmode="numeric" data-kind="fijo" data-idx="' + i + '" data-field="monto" value="' + f.monto + '"></td>'
+      + '<td><button class="delx" data-action="del-fijo" data-idx="' + i + '">×</button></td></tr>';
+  });
+  h += '</tbody></table><button class="addbtn mini" data-action="add-fijo" style="margin:10px">+ Agregar costo fijo</button></div>';
+  h += '<p class="hint">Estos costos fijos se cuentan automáticamente en el Estado de resultados por cada mes del período. Las compras variables (insumos, nafta, cubiertas, equipos) se cargan en Gastos.</p>';
+
+  h += '<h2 class="sec">Respaldo de datos</h2>';
+  h += '<div class="note">Tus datos viven solo en este teléfono. Descargá un respaldo cada tanto (y antes de cambiar de celular): guarda clientas, turnos, gastos y precios en un archivo que después podés volver a importar.</div>';
+  h += '<button class="addbtn" data-action="descargar-respaldo">Descargar respaldo</button>';
+  h += '<button class="ghost" data-action="importar-respaldo">Importar respaldo</button>';
+  h += '<input type="file" id="import-file" accept="application/json,.json" style="display:none">';
+  return h;
+}
+
+function descargarRespaldo() {
+  try {
+    const blob = new Blob([JSON.stringify(state)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "respaldo-tati-" + hoyStr() + ".json";
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+  } catch (e) { alert("No se pudo generar el respaldo en este navegador."); }
+}
+function importarRespaldo(file) {
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    let s;
+    try { s = JSON.parse(e.target.result); } catch (err) { alert("No se pudo leer el archivo (no es un respaldo válido)."); return; }
+    if (!s || !s.procs || !s.productos) { alert("El archivo no parece un respaldo de esta app."); return; }
+    if (!confirm("Esto reemplaza TODOS los datos actuales por los del respaldo. ¿Seguir?")) return;
+    state = {
+      productos: mergeProductos(s.productos),
+      procs: mergeProcs(s.procs),
+      fijos: s.fijos || clone(DEFAULTS.fijos),
+      clientas: s.clientas || [],
+      turnos: (s.turnos || []).map(migrarTurno),
+      gastos: s.gastos || [],
+      params: Object.assign(clone(DEFAULTS.params), s.params || {}),
+    };
+    save(); draft = emptyDraft(); gdraft = emptyGasto(); tab = "servicios"; render();
+    alert("Respaldo importado ✓");
+  };
+  reader.readAsText(file);
+}
+
+function lab(t) { return '<label class="lab">' + t + '</label>'; }
+function pf(label, field, val) { return '<label>' + label + '</label><input inputmode="numeric" data-kind="param" data-field="' + field + '" value="' + val + '">'; }
+function foot() { return '<div class="foot">Tus datos se guardan solos en este teléfono.<br><button data-action="reset">Restablecer todo a valores iniciales</button></div>'; }
+
+// ================= Eventos =================
+document.addEventListener("input", function (ev) {
+  if (ev.target.id === "cli-search") {
+    ui.cliQuery = ev.target.value;
+    const box = document.getElementById("cli-results");
+    if (box) box.innerHTML = cliResultsHtml(ev.target.value);
+  }
+  if (["g-envases", "g-precio"].indexOf(ev.target.id) >= 0) {
+    const env = num((document.getElementById("g-envases") || {}).value);
+    const pre = num((document.getElementById("g-precio") || {}).value);
+    const hint = document.getElementById("g-total-hint");
+    if (hint) hint.innerHTML = "Total del gasto: <b>" + fmt(env * pre) + "</b>";
+  }
+});
+
+document.addEventListener("change", function (ev) {
+  const el = ev.target;
+  if (el.id === "import-file" && el.files && el.files[0]) { importarRespaldo(el.files[0]); el.value = ""; return; }
+  const kind = el.getAttribute && el.getAttribute("data-kind");
+  if (!kind) return;
+  if (kind === "df") { draft[el.getAttribute("data-field")] = el.value; return; } // fecha del turno: guarda sin re-render
+  const field = el.getAttribute("data-field");
+  const idx = el.getAttribute("data-idx");
+  const id = el.getAttribute("data-id");
+  if (kind === "param") { state.params[field] = num(el.value); save(); render(); }
+  else if (kind === "producto") { const o = state.productos.find(x => x.id === id); if (o) o[field] = num(el.value); save(); render(); }
+  else if (kind === "proc") { const o = state.procs.find(x => x.id === id); if (o) o[field] = num(el.value); save(); render(); }
+  else if (kind === "fijo") { state.fijos[+idx][field] = (field === "nombre") ? el.value : num(el.value); save(); render(); }
+  else if (kind === "ui") { ui[field] = el.value; render(); }
+  else if (kind === "srv") { srvChange(+idx, field, el.value); }
+  else if (kind === "gd") {
+    if (field === "productoId") {
+      gdraft.productoId = el.value; gdraft.nuevo = (el.value === "__new__");
+      const prod = state.productos.find(x => x.id === el.value);
+      if (prod) gdraft.precioEnvase = prod.precioEnvase;
+    } else { gdraft[field] = el.value; }
+    render();
+  }
+});
+
+function srvChange(i, field, value) {
+  const row = draft.servicios[i]; if (!row) return;
+  if (field === "proc") { row.procId = value; const p = state.procs.find(x => x.id === value); row.precioLista = p ? p.precio : 0; row.manual = false; }
+  else if (field === "desctipo") { row.descTipo = value; row.manual = false; }
+  else if (field === "descval") { row.descValor = num(value); row.manual = false; }
+  else if (field === "final") { row.precioFinal = num(value); row.manual = true; }
+  recomputeRow(row);
+  render();
+}
+function recomputeRow(row) {
+  if (row.manual) return;
+  let f = row.precioLista;
+  if (row.descTipo === "$") f = row.precioLista - row.descValor;
+  else if (row.descTipo === "%") f = row.precioLista * (1 - row.descValor / 100);
+  row.precioFinal = Math.max(0, Math.round(f));
+}
+
+document.addEventListener("click", function (ev) {
+  const b = ev.target.closest("[data-action]");
+  if (!b) return;
+  const a = b.getAttribute("data-action");
+  const id = b.getAttribute("data-id");
+  const idx = b.getAttribute("data-idx");
+
+  if (a === "tab") { tab = b.getAttribute("data-tab"); render(); window.scrollTo(0, 0); }
+  else if (a === "sel-cli") { draft.clientaId = id; ui.cliQuery = ""; draft.nuevaCliente = null; if (draft.servicios.length === 0) draft.servicios.push(emptyRow()); render(); }
+  else if (a === "nueva-cli") { const parts = ui.cliQuery.trim().split(" "); draft.nuevaCliente = { nombre: parts[0] || "", apellido: parts.slice(1).join(" ") || "" }; render(); }
+  else if (a === "cambiar-cli") { draft.clientaId = null; ui.cliQuery = ""; render(); }
+  else if (a === "cancelar-cli") { draft.nuevaCliente = null; render(); }
+  else if (a === "guardar-cli") { guardarClienta(); }
+  else if (a === "add-srv") { draft.servicios.push(emptyRow()); render(); }
+  else if (a === "del-srv") { draft.servicios.splice(+idx, 1); render(); }
+  else if (a === "guardar-turno") { guardarTurno(); }
+  else if (a === "reset-turno") { draft = emptyDraft(); render(); }
+  else if (a === "editar-turno") { editarTurno(id); }
+  else if (a === "del-turno") { if (confirm("¿Borrar este turno?")) { state.turnos = state.turnos.filter(t => t.id !== id); save(); render(); } }
+  else if (a === "descargar-respaldo") { descargarRespaldo(); }
+  else if (a === "importar-respaldo") { const f = document.getElementById("import-file"); if (f) f.click(); }
+  else if (a === "guardar-gasto") { guardarGasto(); }
+  else if (a === "del-gasto") { if (confirm("¿Borrar este gasto?")) { state.gastos = state.gastos.filter(g => g.id !== id); save(); render(); } }
+  else if (a === "add-fijo") { state.fijos.push({ nombre: "Nuevo costo", monto: 0 }); save(); render(); }
+  else if (a === "del-fijo") { state.fijos.splice(+idx, 1); save(); render(); }
+  else if (a === "reset") { if (confirm("¿Borrar TODOS tus datos (clientas, turnos, gastos) y volver a los valores iniciales?")) { state = clone(DEFAULTS); draft = emptyDraft(); gdraft = emptyGasto(); save(); tab = "servicios"; render(); } }
+});
+
+function guardarClienta() {
+  const nombre = (document.getElementById("nc-nombre") || {}).value || "";
+  const apellido = (document.getElementById("nc-apellido") || {}).value || "";
+  if (!nombre.trim()) { alert("Poné al menos el nombre"); return; }
+  const cid = "c_" + Date.now();
+  state.clientas.push({
+    id: cid, nombre: nombre.trim(), apellido: (apellido || "").trim(),
+    tel: (document.getElementById("nc-tel") || {}).value || "",
+    ig: (document.getElementById("nc-ig") || {}).value || "",
+    mail: (document.getElementById("nc-mail") || {}).value || "",
+    dir: (document.getElementById("nc-dir") || {}).value || "",
+    com: (document.getElementById("nc-com") || {}).value || "",
+  });
+  save();
+  draft.clientaId = cid; draft.nuevaCliente = null; ui.cliQuery = "";
+  if (draft.servicios.length === 0) draft.servicios.push(emptyRow());
+  render();
+}
+
+function editarTurno(id) {
+  const t = state.turnos.find(x => x.id === id); if (!t) return;
+  draft = {
+    clientaId: t.clientaId, nuevaCliente: null, fecha: t.fecha, entrada: t.entrada || "", salida: t.salida || "",
+    servicios: t.servicios.map(r => ({ procId: r.procId, precioLista: r.precioLista, descTipo: r.descTipo, descValor: r.descValor, precioFinal: r.precioFinal, manual: true, obs: r.obs || "" })),
+    editId: t.id,
+  };
+  render(); window.scrollTo(0, 0);
+}
+
+function guardarTurno() {
+  // la fecha ya se guarda en draft al cambiarla (data-kind df); igual leo el DOM por las dudas
+  const dom = (document.getElementById("t-fecha") || {}).value;
+  if (dom) draft.fecha = dom;
+  if (!draft.clientaId) { alert("Elegí una clienta"); return; }
+  const servicios = draft.servicios.filter(r => r.procId);
+  if (servicios.length === 0) { alert("Agregá al menos un servicio"); return; }
+  if (!draft.fecha) { alert("Poné la fecha"); return; }
+  const registro = {
+    id: draft.editId || ("t_" + Date.now()), fecha: draft.fecha, clientaId: draft.clientaId,
+    entrada: draft.entrada || "", salida: draft.salida || "",
+    servicios: servicios.map(r => ({ procId: r.procId, precioLista: r.precioLista, descTipo: r.descTipo, descValor: r.descValor, precioFinal: r.precioFinal, obs: r.obs || "" })),
+  };
+  if (draft.editId) {
+    const i = state.turnos.findIndex(t => t.id === draft.editId);
+    if (i >= 0) state.turnos[i] = registro; else state.turnos.push(registro);
+  } else {
+    state.turnos.push(registro);
+  }
+  save();
+  const editaba = !!draft.editId;
+  draft = emptyDraft();
+  alert(editaba ? "Cambios guardados ✓" : "Turno guardado ✓");
+  render(); window.scrollTo(0, 0);
+}
+
+function guardarGasto() {
+  const fecha = (document.getElementById("g-fecha") || {}).value || hoyStr();
+  const envases = num((document.getElementById("g-envases") || {}).value) || 1;
+  const precio = num((document.getElementById("g-precio") || {}).value);
+  let nombre = "", productoId = "";
+  if (gdraft.nuevo) {
+    nombre = (document.getElementById("g-nombre") || {}).value || "";
+    if (!nombre.trim()) { alert("Poné el nombre del producto"); return; }
+  } else if (gdraft.productoId) {
+    const prod = state.productos.find(x => x.id === gdraft.productoId);
+    if (!prod) { alert("Elegí un producto"); return; }
+    nombre = prod.nombre; productoId = prod.id;
+    // actualizar precio del insumo en la calculadora
+    prod.precioEnvase = precio;
+  } else { alert("Elegí un producto"); return; }
+  if (!precio) { alert("Poné el precio"); return; }
+
+  state.gastos.push({ id: "g_" + Date.now(), fecha, productoId, nombre: nombre.trim(), categoria: gdraft.categoria, envases, precioEnvase: precio, monto: envases * precio });
+  save();
+  gdraft = emptyGasto();
+  alert("Gasto guardado ✓");
+  render(); window.scrollTo(0, 0);
+}
+
+// ================= Arranque =================
+state = load();
+ui.resDesde = iso(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+ui.resHasta = iso(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0));
+render();
+</script>
+</body>
+</html>
